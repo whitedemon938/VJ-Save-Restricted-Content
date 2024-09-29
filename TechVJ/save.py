@@ -41,7 +41,7 @@ async def upstatus(client: Client, statusfile, message):
         if os.path.exists(statusfile):
             break
 
-        await asyncio.sleep(3)      
+        await asleep(3)      
     while os.path.exists(statusfile):
         with open(statusfile, "r") as upread:
             txt = upread.read()
