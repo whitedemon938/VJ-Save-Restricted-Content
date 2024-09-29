@@ -1,8 +1,4 @@
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
-import asyncio 
+from asyncio import create_task, sleep as asleep
 import pyrogram
 from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
@@ -27,16 +23,16 @@ async def downstatus(client: Client, statusfile, message):
         if os.path.exists(statusfile):
             break
 
-        await asyncio.sleep(3)
+        await asleep(3)
       
     while os.path.exists(statusfile):
         with open(statusfile, "r") as downread:
             txt = downread.read()
         try:
             await client.edit_message_text(message.chat.id, message.id, f"Downloaded : {txt}")
-            await asyncio.sleep(10)
+            await asleep(10)
         except:
-            await asyncio.sleep(5)
+            await asleep(5)
 
 
 # upload status
@@ -51,9 +47,9 @@ async def upstatus(client: Client, statusfile, message):
             txt = upread.read()
         try:
             await client.edit_message_text(message.chat.id, message.id, f"Uploaded : {txt}")
-            await asyncio.sleep(10)
+            await asleep(10)
         except:
-            await asyncio.sleep(5)
+            await asleep(5)
 
 
 # progress writer
@@ -142,7 +138,7 @@ async def save(client: Client, message: Message):
                         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
             # wait time
-            await asyncio.sleep(3)
+            await asleep(3)
 
 
 # handle private
@@ -158,7 +154,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             return
 
     smsg = await client.send_message(message.chat.id, 'Downloading', reply_to_message_id=message.id)
-    dosta = asyncio.create_task(downstatus(client, f'{message.id}downstatus.txt', smsg))
+    dosta = create_task(downstatus(client, f'{message.id}downstatus.txt', smsg))
     try:
         file = await acc.download_media(msg, progress=progress, progress_args=[message,"down"])
         os.remove(f'{message.id}downstatus.txt')
@@ -166,7 +162,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
     except Exception as e:
         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)  
     
-    upsta = asyncio.create_task(upstatus(client, f'{message.id}upstatus.txt', smsg))
+    upsta = create_task(upstatus(client, f'{message.id}upstatus.txt', smsg))
 
     if msg.caption:
         caption = msg.caption
