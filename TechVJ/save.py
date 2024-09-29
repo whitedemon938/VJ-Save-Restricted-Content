@@ -4,7 +4,7 @@ from pyrogram import Client, filters
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message 
 import time
-import os
+from os import path as ospath, remove as osremove
 import threading
 import json
 from config import API_ID, API_HASH
@@ -17,15 +17,14 @@ def get(obj, key, default=None):
     except:
         return default
 
-
 async def downstatus(client: Client, statusfile, message):
     while True:
-        if os.path.exists(statusfile):
+        if ospath.exists(statusfile):
             break
 
         await asleep(3)
       
-    while os.path.exists(statusfile):
+    while ospath.exists(statusfile):
         with open(statusfile, "r") as downread:
             txt = downread.read()
         try:
@@ -38,11 +37,11 @@ async def downstatus(client: Client, statusfile, message):
 # upload status
 async def upstatus(client: Client, statusfile, message):
     while True:
-        if os.path.exists(statusfile):
+        if ospath.exists(statusfile):
             break
 
         await asleep(3)      
-    while os.path.exists(statusfile):
+    while ospath.exists(statusfile):
         with open(statusfile, "r") as upread:
             txt = upread.read()
         try:
@@ -179,7 +178,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             await client.send_document(chat, file, thumb=ph_path, caption=caption, reply_to_message_id=message.id, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-        if ph_path != None: os.remove(ph_path)
+        if ph_path != None: osremove(ph_path)
         
 
     elif "Video" == msg_type:
@@ -192,7 +191,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             await client.send_video(chat, file, duration=msg.video.duration, width=msg.video.width, height=msg.video.height, thumb=ph_path, caption=caption, reply_to_message_id=message.id, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-        if ph_path != None: os.remove(ph_path)
+        if ph_path != None: osremove(ph_path)
 
     elif "Animation" == msg_type:
         try:
@@ -225,7 +224,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         except Exception as e:
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
         
-        if ph_path != None: os.remove(ph_path)
+        if ph_path != None: osremove(ph_path)
 
     elif "Photo" == msg_type:
         try:
@@ -233,9 +232,9 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         except Exception as e:
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
     
-    if os.path.exists(f'{message.id}upstatus.txt'): 
-        os.remove(f'{message.id}upstatus.txt')
-        os.remove(file)
+    if ospath.exists(f'{message.id}upstatus.txt'): 
+        osremove(f'{message.id}upstatus.txt')
+        osremove(file)
     await client.delete_messages(message.chat.id,[smsg.id])
 
 
@@ -288,4 +287,3 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
         return "Text"
     except:
         pass
-        
